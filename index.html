@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monoloog Hotels — Stay Somewhere Meaningful</title>
+  <meta name="description" content="Monoloog Hotels — Premium stays across Indonesia's most iconic destinations. Book Beach, City, Boutique, Mountain & Spa hotels.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Page-specific styles ─── */
+    .hero { height: 600px; }
+
+    /* Mobile search fab */
+    .mobile-search-fab {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      background: white;
+      border-radius: 100px;
+      box-shadow: var(--shadow-float);
+      padding: 14px 24px;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    @media (max-width: 768px) { .mobile-search-fab { display: flex; } }
+
+    /* Search overlay for mobile */
+    .search-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: white;
+      flex-direction: column;
+      padding: var(--sp-5);
+    }
+    .search-overlay.open { display: flex; }
+    .search-overlay__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--sp-5);
+    }
+
+    /* Promotional banner */
+    .promo-banner {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, #1a0a2e 100%);
+      padding: var(--sp-3) var(--sp-6);
+      text-align: center;
+      font-family: var(--font-nav);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.9);
+    }
+    .promo-banner a { color: var(--brand-orange); text-decoration: underline; }
+
+    /* Destination cards */
+    .dest-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--sp-4);
+    }
+    @media (max-width: 1024px) { .dest-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .dest-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .dest-card {
+      position: relative;
+      aspect-ratio: 4/3;
+      border-radius: var(--r-card);
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+    }
+    .dest-card--tall { aspect-ratio: 2/3; }
+    .dest-card__img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .dest-card:hover .dest-card__img { transform: scale(1.05); }
+    .dest-card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(40,40,40,0.8) 0%, transparent 55%);
+    }
+    .dest-card__body {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--sp-4);
+    }
+    .dest-card__city {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: white;
+      margin-bottom: 2px;
+    }
+    .dest-card__count {
+      font-family: var(--font-nav);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.04em;
+    }
+
+    /* Feature strip */
+    .feature-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--sp-5);
+      padding: var(--sp-7) 0;
+    }
+    @media (max-width: 768px) { .feature-strip { grid-template-columns: repeat(2, 1fr); } }
+
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--sp-3);
+    }
+    .feature-item__icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(212,4,36,0.08);
+      border-radius: var(--r-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .feature-item__title {
+      font-family: var(--font-nav);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+    .feature-item__desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    /* Section divider label */
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-nav);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand-red);
+      margin-bottom: var(--sp-2);
+    }
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--brand-red);
+      border-radius: 1px;
+    }
+
+    /* App banner */
+    .app-banner {
+      background: var(--brand-dark);
+      border-radius: var(--r-card);
+      padding: var(--sp-7) var(--sp-8);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-6);
+      overflow: hidden;
+      position: relative;
+    }
+    .app-banner::before {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(212,4,36,0.15);
+    }
+    .app-banner::after {
+      content: '';
+      position: absolute;
+      right: 60px;
+      bottom: -80px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: rgba(239,109,0,0.1);
+    }
+    .app-banner__content { position: relative; z-index: 1; }
+    .app-banner__tag {
+      font-family: var(--font-nav);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand-orange);
+      margin-bottom: var(--sp-2);
+    }
+    .app-banner__title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      color: white;
+      margin-bottom: var(--sp-3);
+      letter-spacing: -0.01em;
+    }
+    .app-banner__sub {
+      font-size: 0.9375rem;
+      color: rgba(255,255,255,0.65);
+      font-weight: 300;
+      margin-bottom: var(--sp-5);
+      max-width: 380px;
+    }
+    .app-banner__btns { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+    .app-store-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      background: white;
+      color: var(--brand-dark);
+      border-radius: var(--r-sm);
+      padding: 10px 18px;
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background var(--transition);
+    }
+    .app-store-btn:hover { background: #f2f2f2; }
+    .app-store-btn span { font-size: 1.25rem; }
+
+    @media (max-width: 768px) {
+      .app-banner { padding: var(--sp-5); flex-direction: column; }
+      .dest-grid { gap: var(--sp-3); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Promo Banner ─────────────────────────────────────────── -->
+<div class="promo-banner">
+  🎉 Limited offer: Get <strong>20% off</strong> your first booking. Use code <a href="search.html">MONO20</a>
+</div>
+
+<!-- ── Header ──────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="header-inner">
+    <!-- Logo -->
+    <a href="index.html" class="logo">
+      <div class="logo__mark">M</div>
+      <span class="logo__text">Monoloog</span>
+    </a>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <div class="search-bar__inner">
+        <div class="search-segment">
+          <span class="search-segment__label">Where</span>
+          <input class="search-segment__input" type="text" placeholder="Search destinations" aria-label="Destination">
+        </div>
+        <div class="search-segment" data-datepicker="checkin-display">
+          <span class="search-segment__label">Check in</span>
+          <span class="search-segment__input" id="checkin-display">Add dates</span>
+        </div>
+        <div class="search-segment" data-datepicker="checkout-display">
+          <span class="search-segment__label">Check out</span>
+          <span class="search-segment__input" id="checkout-display">Add dates</span>
+        </div>
+        <div class="search-segment">
+          <span class="search-segment__label">Guests</span>
+          <input class="search-segment__input" type="text" placeholder="Add guests" aria-label="Guests">
+        </div>
+        <a href="search.html" class="search-btn" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="header-actions">
+      <a href="#" class="btn-host">List your property</a>
+      <div class="user-menu" role="button" aria-label="User menu">
+        <svg class="user-menu__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <div class="user-avatar">M</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Category Filter Bar ──────────────────────────────────── -->
+<nav class="category-bar" aria-label="Hotel categories">
+  <div class="category-bar__scroll">
+    <a class="category-pill active" href="search.html?cat=all">
+      <span class="category-pill__icon">🏨</span>
+      <span class="category-pill__label">All Hotels</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=beach">
+      <span class="category-pill__icon">🏖️</span>
+      <span class="category-pill__label">Beach</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=city">
+      <span class="category-pill__icon">🌆</span>
+      <span class="category-pill__label">City</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=luxury">
+      <span class="category-pill__icon">💎</span>
+      <span class="category-pill__label">Luxury</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=mountain">
+      <span class="category-pill__icon">⛰️</span>
+      <span class="category-pill__label">Mountain</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=spa">
+      <span class="category-pill__icon">🧖</span>
+      <span class="category-pill__label">Spa & Wellness</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=boutique">
+      <span class="category-pill__icon">🏡</span>
+      <span class="category-pill__label">Boutique</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=heritage">
+      <span class="category-pill__icon">🕌</span>
+      <span class="category-pill__label">Heritage</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=pool">
+      <span class="category-pill__icon">🏊</span>
+      <span class="category-pill__label">Pool Villa</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=resort">
+      <span class="category-pill__icon">🌴</span>
+      <span class="category-pill__label">Resort</span>
+    </a>
+    <a class="category-pill" href="search.html?cat=budget">
+      <span class="category-pill__icon">✨</span>
+      <span class="category-pill__label">Great Value</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ── Hero ────────────────────────────────────────────────── -->
+<section class="hero">
+  <img class="hero__img"
+    src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&h=700&fit=crop&q=80"
+    alt="Monoloog Hotels — luxury pool resort in Bali">
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <p class="hero__label">Indonesia's finest stays</p>
+    <h1 class="hero__title">Stay Somewhere<br>Meaningful</h1>
+    <p class="hero__sub">Handpicked hotels across Bali, Jakarta, Yogyakarta, Lombok & beyond.</p>
+    <!-- Floating Search in Hero -->
+    <div class="search-float">
+      <div class="search-segment">
+        <span class="search-segment__label">Where to?</span>
+        <input class="search-segment__input" type="text" placeholder="Bali, Jakarta, Yogyakarta…">
+      </div>
+      <div class="search-segment">
+        <span class="search-segment__label">Check in</span>
+        <span class="search-segment__input">Add date</span>
+      </div>
+      <div class="search-segment">
+        <span class="search-segment__label">Check out</span>
+        <span class="search-segment__input">Add date</span>
+      </div>
+      <div class="search-segment">
+        <span class="search-segment__label">Guests</span>
+        <input class="search-segment__input" type="text" placeholder="2 guests">
+      </div>
+      <a href="search.html" class="search-btn" aria-label="Search hotels">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Main Content ─────────────────────────────────────────── -->
+<main>
+  <div class="container">
+
+    <!-- ── Featured Hotels ──────────────────────────────────── -->
+    <section class="section">
+      <div class="section__header">
+        <div>
+          <p class="section-tag">Hand-picked for you</p>
+          <h2 class="section__title">Featured Hotels</h2>
+        </div>
+        <a href="search.html" class="section__link">View all →</a>
+      </div>
+
+      <div class="hotel-grid">
+        <!-- Card 1 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Bali Seminyak" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save to wishlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+            <div class="hotel-card__badge">Guest Favourite</div>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Bali Seminyak</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.97
+              </span>
+            </div>
+            <p class="hotel-card__location">Seminyak, Bali</p>
+            <p class="hotel-card__dates">Available: Apr 12 – Apr 18</p>
+            <p class="hotel-card__price">Rp 1,850,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 2 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Lombok Beach Resort" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save to wishlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Lombok Beach</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.85
+              </span>
+            </div>
+            <p class="hotel-card__location">Senggigi, Lombok</p>
+            <p class="hotel-card__dates">Available: Apr 15 – Apr 20</p>
+            <p class="hotel-card__price">Rp 1,250,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 3 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1551882547-ff40c63fe2e2?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Jakarta" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save to wishlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+            <div class="hotel-card__badge">New Opening</div>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Jakarta Central</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.91
+              </span>
+            </div>
+            <p class="hotel-card__location">SCBD, Jakarta</p>
+            <p class="hotel-card__dates">Available: Apr 10 – Apr 25</p>
+            <p class="hotel-card__price">Rp 2,100,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 4 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Bali Ubud" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save to wishlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Ubud Terrace</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.94
+              </span>
+            </div>
+            <p class="hotel-card__location">Ubud, Bali</p>
+            <p class="hotel-card__dates">Available: May 1 – May 10</p>
+            <p class="hotel-card__price">Rp 3,400,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 5 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Yogyakarta" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save to wishlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Yogyakarta</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.88
+              </span>
+            </div>
+            <p class="hotel-card__location">Malioboro, Yogyakarta</p>
+            <p class="hotel-card__dates">Available: Apr 20 – Apr 28</p>
+            <p class="hotel-card__price">Rp 980,000 <span>/ night</span></p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Explore Destinations ──────────────────────────────── -->
+    <section class="section" style="padding-top:0">
+      <div class="section__header">
+        <div>
+          <p class="section-tag">By location</p>
+          <h2 class="section__title">Explore Destinations</h2>
+        </div>
+      </div>
+      <div class="dest-grid">
+        <a href="search.html?dest=bali" class="dest-card">
+          <img class="dest-card__img"
+            src="https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=600&h=450&fit=crop&q=80"
+            alt="Bali" loading="lazy">
+          <div class="dest-card__overlay"></div>
+          <div class="dest-card__body">
+            <p class="dest-card__city">Bali</p>
+            <p class="dest-card__count">18 hotels</p>
+          </div>
+        </a>
+        <a href="search.html?dest=jakarta" class="dest-card">
+          <img class="dest-card__img"
+            src="https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=600&h=450&fit=crop&q=80"
+            alt="Jakarta" loading="lazy">
+          <div class="dest-card__overlay"></div>
+          <div class="dest-card__body">
+            <p class="dest-card__city">Jakarta</p>
+            <p class="dest-card__count">12 hotels</p>
+          </div>
+        </a>
+        <a href="search.html?dest=yogyakarta" class="dest-card">
+          <img class="dest-card__img"
+            src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=600&h=450&fit=crop&q=80"
+            alt="Yogyakarta" loading="lazy">
+          <div class="dest-card__overlay"></div>
+          <div class="dest-card__body">
+            <p class="dest-card__city">Yogyakarta</p>
+            <p class="dest-card__count">7 hotels</p>
+          </div>
+        </a>
+        <a href="search.html?dest=lombok" class="dest-card">
+          <img class="dest-card__img"
+            src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=600&h=450&fit=crop&q=80"
+            alt="Lombok" loading="lazy">
+          <div class="dest-card__overlay"></div>
+          <div class="dest-card__body">
+            <p class="dest-card__city">Lombok</p>
+            <p class="dest-card__count">5 hotels</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Why Monoloog ──────────────────────────────────────── -->
+    <section class="section" style="background:var(--bg-surface); border-radius:var(--r-card); padding: var(--sp-7) var(--sp-7); margin-bottom: var(--sp-8);">
+      <div style="text-align:center; margin-bottom: var(--sp-6);">
+        <p class="section-tag" style="justify-content:center">Why choose us</p>
+        <h2 class="section__title">The Monoloog Difference</h2>
+      </div>
+      <div class="feature-strip" style="padding:0">
+        <div class="feature-item">
+          <div class="feature-item__icon">🏆</div>
+          <div class="feature-item__title">Curated Quality</div>
+          <p class="feature-item__desc">Every property is personally inspected and meets our strict quality standards before listing.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-item__icon">💳</div>
+          <div class="feature-item__title">Best Price Promise</div>
+          <p class="feature-item__desc">Book direct and we guarantee the lowest rate — no hidden fees, no surprises.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-item__icon">🌙</div>
+          <div class="feature-item__title">Free Cancellation</div>
+          <p class="feature-item__desc">Most rooms offer free cancellation up to 24 hours before check-in.</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-item__icon">🛎️</div>
+          <div class="feature-item__title">24/7 Support</div>
+          <p class="feature-item__desc">Our hospitality team is always on call via WhatsApp, phone, or live chat.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── More Hotels ───────────────────────────────────────── -->
+    <section class="section" style="padding-top:0">
+      <div class="section__header">
+        <div>
+          <p class="section-tag">More to discover</p>
+          <h2 class="section__title">Trending This Month</h2>
+        </div>
+        <a href="search.html" class="section__link">View all →</a>
+      </div>
+
+      <div class="hotel-grid">
+        <!-- Card 6 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Bandung" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Bandung Hills</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.82
+              </span>
+            </div>
+            <p class="hotel-card__location">Dago, Bandung</p>
+            <p class="hotel-card__dates">Available: Apr 8 – Apr 30</p>
+            <p class="hotel-card__price">Rp 750,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 7 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Surabaya" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Surabaya</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.79
+              </span>
+            </div>
+            <p class="hotel-card__location">Darmo, Surabaya</p>
+            <p class="hotel-card__dates">Available: Apr 9 – May 5</p>
+            <p class="hotel-card__price">Rp 890,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 8 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Komodo View" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+            <div class="hotel-card__badge">Exclusive</div>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Labuan Bajo</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.99
+              </span>
+            </div>
+            <p class="hotel-card__location">Labuan Bajo, NTT</p>
+            <p class="hotel-card__dates">Available: May 5 – May 20</p>
+            <p class="hotel-card__price">Rp 4,200,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 9 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Borobudur" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Borobudur View</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.93
+              </span>
+            </div>
+            <p class="hotel-card__location">Magelang, Jawa Tengah</p>
+            <p class="hotel-card__dates">Available: Apr 14 – Apr 30</p>
+            <p class="hotel-card__price">Rp 1,650,000 <span>/ night</span></p>
+          </div>
+        </a>
+
+        <!-- Card 10 -->
+        <a href="hotel-detail.html" class="hotel-card">
+          <div class="hotel-card__img-wrap">
+            <img class="hotel-card__img"
+              src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=600&h=375&fit=crop&q=80"
+              alt="Monoloog Nusa Dua" loading="lazy">
+            <button class="hotel-card__wishlist" data-saved="false" aria-label="Save">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="hotel-card__body">
+            <div class="hotel-card__top">
+              <span class="hotel-card__name">Monoloog Nusa Dua</span>
+              <span class="hotel-card__rating">
+                <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                4.90
+              </span>
+            </div>
+            <p class="hotel-card__location">Nusa Dua, Bali</p>
+            <p class="hotel-card__dates">Available: Apr 11 – May 1</p>
+            <p class="hotel-card__price">Rp 2,750,000 <span>/ night</span></p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── App Download Banner ───────────────────────────────── -->
+    <div class="app-banner" style="margin-bottom: var(--sp-8)">
+      <div class="app-banner__content">
+        <p class="app-banner__tag">Monoloog App</p>
+        <h2 class="app-banner__title">Book on the go.<br>Save even more.</h2>
+        <p class="app-banner__sub">Get exclusive app-only deals, real-time availability, and manage all your bookings in one place.</p>
+        <div class="app-banner__btns">
+          <a href="#" class="app-store-btn">
+            <span>🍎</span> App Store
+          </a>
+          <a href="#" class="app-store-btn">
+            <span>▶</span> Google Play
+          </a>
+        </div>
+      </div>
+      <div style="position:relative; z-index:1; flex-shrink:0; display:flex; gap:var(--sp-3); align-items:center;">
+        <div style="display:flex; flex-direction:column; gap:var(--sp-3);">
+          <div style="width:180px; height:120px; background:rgba(255,255,255,0.1); border-radius:var(--r-card); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); padding:var(--sp-3);">
+            <p style="font-family:var(--font-nav);font-size:0.625rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:var(--sp-1)">Tonight's Pick</p>
+            <p style="font-family:var(--font-heading);font-size:1rem;color:white;margin-bottom:4px">Monoloog Bali</p>
+            <p style="font-family:var(--font-nav);font-size:0.875rem;color:var(--brand-orange);font-weight:700">Rp 1,850,000</p>
+          </div>
+          <div style="width:180px; height:60px; background:var(--brand-red); border-radius:var(--r-sm); display:flex; align-items:center; justify-content:center; padding:var(--sp-3);">
+            <p style="font-family:var(--font-nav);font-size:0.875rem;font-weight:700;color:white;letter-spacing:0.04em">BOOK NOW →</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Brand Column -->
+      <div>
+        <div class="footer-brand__logo">
+          <div class="footer-brand__mark">M</div>
+          <span class="footer-brand__name">Monoloog</span>
+        </div>
+        <p class="footer-brand__tagline">
+          Premium hotel experiences across Indonesia's most iconic destinations. Stay somewhere meaningful.
+        </p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social" aria-label="Instagram">📸</a>
+          <a href="#" class="footer-social" aria-label="Facebook">📘</a>
+          <a href="#" class="footer-social" aria-label="TikTok">🎵</a>
+          <a href="#" class="footer-social" aria-label="WhatsApp">💬</a>
+        </div>
+      </div>
+
+      <!-- Destinations -->
+      <div>
+        <p class="footer-col__title">Destinations</p>
+        <div class="footer-col__links">
+          <a href="search.html?dest=bali" class="footer-col__link">Bali</a>
+          <a href="search.html?dest=jakarta" class="footer-col__link">Jakarta</a>
+          <a href="search.html?dest=yogyakarta" class="footer-col__link">Yogyakarta</a>
+          <a href="search.html?dest=lombok" class="footer-col__link">Lombok</a>
+          <a href="search.html?dest=bandung" class="footer-col__link">Bandung</a>
+          <a href="search.html?dest=surabaya" class="footer-col__link">Surabaya</a>
+        </div>
+      </div>
+
+      <!-- Hotel Types -->
+      <div>
+        <p class="footer-col__title">Hotel Types</p>
+        <div class="footer-col__links">
+          <a href="search.html?cat=beach" class="footer-col__link">Beach Resorts</a>
+          <a href="search.html?cat=luxury" class="footer-col__link">Luxury Hotels</a>
+          <a href="search.html?cat=boutique" class="footer-col__link">Boutique Hotels</a>
+          <a href="search.html?cat=spa" class="footer-col__link">Spa & Wellness</a>
+          <a href="search.html?cat=mountain" class="footer-col__link">Mountain Retreats</a>
+          <a href="search.html?cat=heritage" class="footer-col__link">Heritage Hotels</a>
+        </div>
+      </div>
+
+      <!-- Support -->
+      <div>
+        <p class="footer-col__title">Support</p>
+        <div class="footer-col__links">
+          <a href="#" class="footer-col__link">Help Center</a>
+          <a href="#" class="footer-col__link">Contact Us</a>
+          <a href="#" class="footer-col__link">Cancellation Policy</a>
+          <a href="#" class="footer-col__link">WhatsApp Support</a>
+          <a href="#" class="footer-col__link">Manage Booking</a>
+        </div>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <p class="footer-col__title">Company</p>
+        <div class="footer-col__links">
+          <a href="#" class="footer-col__link">About Monoloog</a>
+          <a href="#" class="footer-col__link">Careers</a>
+          <a href="#" class="footer-col__link">List Your Hotel</a>
+          <a href="#" class="footer-col__link">Press</a>
+          <a href="#" class="footer-col__link">Investor Relations</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-bottom__copy">© 2026 Monoloog Hotels Indonesia. All rights reserved.</p>
+      <div class="footer-bottom__links">
+        <a href="#" class="footer-bottom__link">Privacy Policy</a>
+        <a href="#" class="footer-bottom__link">Terms of Service</a>
+        <a href="#" class="footer-bottom__link">Cookie Settings</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile Search FAB -->
+<button class="mobile-search-fab" id="mobile-search-btn" aria-label="Search hotels">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/>
+  </svg>
+  Where to? · Any dates · Any guests
+</button>
+
+<script src="script.js"></script>
+</body>
+</html>

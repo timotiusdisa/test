@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monoloog Bali Seminyak — Monoloog Hotels</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background: var(--bg-white); }
+
+    /* ── Breadcrumb ─── */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-4) 0;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+    .breadcrumb a { color: var(--text-secondary); text-decoration: underline; }
+    .breadcrumb a:hover { color: var(--text-primary); }
+    .breadcrumb__sep { color: var(--text-muted); }
+
+    /* ── Hotel Header ─── */
+    .hotel-header { padding: var(--sp-2) 0 var(--sp-4); }
+    .hotel-header__top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--sp-4);
+      flex-wrap: wrap;
+      margin-bottom: var(--sp-3);
+    }
+    .hotel-title {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .hotel-header__actions {
+      display: flex;
+      gap: var(--sp-3);
+      flex-shrink: 0;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: var(--r-sm);
+      border: none;
+      background: none;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: background var(--transition);
+    }
+    .action-btn:hover { background: var(--bg-surface); }
+    .action-btn svg { width: 16px; height: 16px; }
+
+    .hotel-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      flex-wrap: wrap;
+    }
+    .hotel-meta__item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+    }
+    .hotel-meta__item svg { width: 14px; height: 14px; }
+    .hotel-meta__item a { font-weight: 700; text-decoration: underline; }
+    .hotel-meta__dot { color: var(--text-muted); font-size: 0.75rem; }
+
+    /* ── Photo Gallery ─── */
+    .gallery-wrap { margin-bottom: var(--sp-6); position: relative; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 260px 260px;
+      gap: 6px;
+      border-radius: var(--r-card);
+      overflow: hidden;
+    }
+    @media (max-width: 768px) {
+      .gallery-grid { grid-template-columns: 1fr; grid-template-rows: 300px; }
+      .gallery-grid .gallery-img:not(:first-child) { display: none; }
+    }
+    .gallery-main { grid-row: 1 / 3; }
+    .gallery-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+      transition: opacity var(--transition), transform 0.3s ease;
+    }
+    .gallery-img:hover { opacity: 0.92; }
+    .gallery-show-all {
+      position: absolute;
+      bottom: var(--sp-4);
+      right: var(--sp-4);
+      background: white;
+      color: var(--text-primary);
+      border: 1.5px solid var(--text-primary);
+      border-radius: var(--r-sm);
+      padding: 8px 16px;
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+    .gallery-show-all:hover { background: var(--text-primary); color: white; }
+    .gallery-show-all svg { width: 14px; height: 14px; }
+
+    /* ── Detail Layout ─── */
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: var(--sp-8);
+      align-items: start;
+      padding-bottom: var(--sp-8);
+    }
+    @media (max-width: 1024px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .booking-panel { position: static !important; }
+    }
+
+    /* ── Detail Sections ─── */
+    .detail-section { padding: var(--sp-6) 0; border-top: 1px solid var(--border); }
+    .detail-section:first-child { border-top: none; padding-top: 0; }
+
+    .detail-section__title {
+      font-family: var(--font-heading);
+      font-size: 1.375rem;
+      color: var(--text-primary);
+      margin-bottom: var(--sp-4);
+      letter-spacing: -0.01em;
+    }
+
+    /* Hotel host bar */
+    .host-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+      padding: var(--sp-4) 0;
+    }
+    .host-avatar {
+      width: 56px; height: 56px;
+      border-radius: var(--r-circle);
+      background: var(--brand-red);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-heading);
+      font-size: 1.375rem;
+      flex-shrink: 0;
+    }
+    .host-info__name {
+      font-family: var(--font-nav);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .host-info__sub {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+    }
+
+    /* Hotel description */
+    .hotel-desc {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+    .hotel-desc p + p { margin-top: var(--sp-3); }
+    .show-more-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-top: var(--sp-3);
+      font-family: var(--font-nav);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: underline;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    /* ── Rooms ─── */
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-4);
+    }
+    @media (max-width: 640px) { .rooms-grid { grid-template-columns: 1fr; } }
+
+    .room-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      overflow: hidden;
+      transition: box-shadow var(--transition);
+    }
+    .room-card:hover { box-shadow: var(--shadow-hover); }
+    .room-card__img-wrap { aspect-ratio: 16/9; overflow: hidden; background: var(--bg-surface); }
+    .room-card__img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+    .room-card:hover .room-card__img { transform: scale(1.04); }
+    .room-card__body { padding: var(--sp-4); }
+    .room-card__name {
+      font-family: var(--font-nav);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--sp-2);
+      letter-spacing: 0.02em;
+    }
+    .room-card__features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-3);
+    }
+    .room-feature {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .room-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: var(--sp-3);
+      border-top: 1px solid var(--border);
+    }
+    .room-price {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      color: var(--text-primary);
+    }
+    .room-price span {
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    /* ── Reviews ─── */
+    .rating-summary {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-7);
+      margin-bottom: var(--sp-6);
+      flex-wrap: wrap;
+    }
+    .rating-big {
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .rating-big__num {
+      font-family: var(--font-heading);
+      font-size: 4rem;
+      color: var(--text-primary);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .rating-big__label {
+      font-family: var(--font-nav);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    .rating-bars { flex: 1; min-width: 200px; }
+    .rating-bar-row {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-2);
+    }
+    .rating-bar-label {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      min-width: 100px;
+    }
+    .rating-bar-track {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .rating-bar-fill {
+      height: 100%;
+      background: var(--brand-dark);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+    .rating-bar-num {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-4);
+    }
+    @media (max-width: 640px) { .reviews-grid { grid-template-columns: 1fr; } }
+
+    /* ── Location ─── */
+    .location-map {
+      aspect-ratio: 16/7;
+      border-radius: var(--r-card);
+      overflow: hidden;
+      background: #dce3ea;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px);
+      background-size: 48px 48px;
+      position: relative;
+      margin-bottom: var(--sp-4);
+    }
+
+    /* ── Sticky nav tabs ─── */
+    .detail-nav {
+      position: sticky;
+      top: 80px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      z-index: 50;
+      margin-bottom: 0;
+    }
+    .detail-nav__inner {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .detail-nav__inner::-webkit-scrollbar { display: none; }
+    .detail-nav__link {
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--text-secondary);
+      padding: var(--sp-4) var(--sp-4);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color var(--transition), border-color var(--transition);
+      text-decoration: none;
+    }
+    .detail-nav__link:hover { color: var(--text-primary); }
+    .detail-nav__link.active { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+
+    /* ── Booking Panel ─── */
+    .booking-panel { top: calc(80px + 57px + var(--sp-4)); }
+    .booking-panel__rating {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-4);
+      padding-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Things to know ─── */
+    .things-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-5);
+    }
+    @media (max-width: 640px) { .things-grid { grid-template-columns: 1fr; } }
+
+    .things-col__title {
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      margin-bottom: var(--sp-3);
+    }
+    .things-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+    .things-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-2);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+      line-height: 1.5;
+    }
+    .things-item svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo__mark">M</div>
+      <span class="logo__text">Monoloog</span>
+    </a>
+    <div class="search-bar">
+      <div class="search-bar__inner">
+        <div class="search-segment">
+          <span class="search-segment__label">Where</span>
+          <input class="search-segment__input" type="text" placeholder="Search destinations" value="Bali">
+        </div>
+        <div class="search-segment">
+          <span class="search-segment__label">Check in</span>
+          <span class="search-segment__input">Apr 12</span>
+        </div>
+        <div class="search-segment">
+          <span class="search-segment__label">Check out</span>
+          <span class="search-segment__input">Apr 18</span>
+        </div>
+        <div class="search-segment">
+          <span class="search-segment__label">Guests</span>
+          <input class="search-segment__input" type="text" value="2 guests">
+        </div>
+        <a href="search.html" class="search-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="#" class="btn-host">List your property</a>
+      <div class="user-menu">
+        <svg class="user-menu__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <div class="user-avatar">M</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Detail Sticky Nav ─────────────────────────────────────── -->
+<nav class="detail-nav">
+  <div class="container">
+    <div class="detail-nav__inner">
+      <a href="#overview"   class="detail-nav__link active">Overview</a>
+      <a href="#amenities"  class="detail-nav__link">Amenities</a>
+      <a href="#rooms"      class="detail-nav__link">Rooms</a>
+      <a href="#reviews"    class="detail-nav__link">Reviews</a>
+      <a href="#location"   class="detail-nav__link">Location</a>
+      <a href="#policies"   class="detail-nav__link">Policies</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main Content ─────────────────────────────────────────── -->
+<main class="container">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb__sep">›</span>
+    <a href="search.html">Bali</a>
+    <span class="breadcrumb__sep">›</span>
+    <a href="search.html?cat=beach">Beach Hotels</a>
+    <span class="breadcrumb__sep">›</span>
+    <span>Monoloog Bali Seminyak</span>
+  </div>
+
+  <!-- Hotel Header -->
+  <div class="hotel-header" id="overview">
+    <div class="hotel-header__top">
+      <div>
+        <div class="stars" style="margin-bottom:var(--sp-2)">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <h1 class="hotel-title">Monoloog Bali Seminyak</h1>
+      </div>
+      <div class="hotel-header__actions">
+        <button class="action-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share
+        </button>
+        <button class="action-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Save
+        </button>
+      </div>
+    </div>
+
+    <div class="hotel-meta">
+      <div class="hotel-meta__item">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="color:var(--brand-orange)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <strong>4.97</strong> · <a href="#reviews">284 reviews</a>
+      </div>
+      <span class="hotel-meta__dot">·</span>
+      <div class="hotel-meta__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Jl. Laksmana, Seminyak, Bali 80361
+      </div>
+      <span class="hotel-meta__dot">·</span>
+      <span class="badge badge--orange">Guest Favourite</span>
+      <span class="badge badge--green">Free Cancellation</span>
+    </div>
+  </div>
+
+  <!-- Photo Gallery -->
+  <div class="gallery-wrap">
+    <div class="gallery-grid">
+      <img class="gallery-img gallery-main"
+        src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=900&h=560&fit=crop&q=85"
+        alt="Hotel pool view">
+      <img class="gallery-img"
+        src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=440&h=276&fit=crop&q=80"
+        alt="Hotel room">
+      <img class="gallery-img"
+        src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=440&h=276&fit=crop&q=80"
+        alt="Infinity pool">
+      <img class="gallery-img"
+        src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=440&h=276&fit=crop&q=80"
+        alt="Beach view">
+      <img class="gallery-img"
+        src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=440&h=276&fit=crop&q=80"
+        alt="Deluxe room">
+    </div>
+    <button class="gallery-show-all">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Show all photos
+    </button>
+  </div>
+
+  <!-- Detail Layout: Content + Booking Panel -->
+  <div class="detail-layout">
+
+    <!-- LEFT: Detail Content -->
+    <div>
+
+      <!-- Host Bar -->
+      <div class="detail-section" style="padding-top:0; border-top:none">
+        <div class="host-bar">
+          <div class="host-avatar">M</div>
+          <div class="host-info">
+            <p class="host-info__name">Managed by Monoloog Hotels</p>
+            <p class="host-info__sub">87 rooms · Superhost · Responds within 1 hour</p>
+          </div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:var(--sp-5)">
+          <div style="display:flex;align-items:center;gap:var(--sp-2);font-size:0.9375rem;color:var(--text-primary)">
+            <span style="font-size:1.5rem">🏆</span>
+            <div><p style="font-weight:700">Guest Favourite</p><p style="font-size:0.8125rem;color:var(--text-secondary)">One of the most loved hotels in Bali</p></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--sp-2);font-size:0.9375rem;color:var(--text-primary)">
+            <span style="font-size:1.5rem">✅</span>
+            <div><p style="font-weight:700">Free Cancellation</p><p style="font-size:0.8125rem;color:var(--text-secondary)">Cancel up to 24h before check-in</p></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--sp-2);font-size:0.9375rem;color:var(--text-primary)">
+            <span style="font-size:1.5rem">🛎️</span>
+            <div><p style="font-weight:700">Dedicated Concierge</p><p style="font-size:0.8125rem;color:var(--text-secondary)">Personal service from arrival to departure</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="detail-section">
+        <h2 class="detail-section__title">About this property</h2>
+        <div class="hotel-desc">
+          <p>Nestled in the heart of Seminyak's most coveted stretch, Monoloog Bali Seminyak is a sanctuary of refined elegance and authentic Balinese spirit. Set across two acres of lush tropical gardens, the hotel seamlessly blends contemporary design with traditional craftsmanship — hand-carved stone facades, cascading water features, and locally-sourced teak furnishings that tell the story of the island.</p>
+          <p>Each of our 87 rooms and suites opens directly onto verdant greenery or our award-winning infinity pool, with unobstructed views of the Indian Ocean at sunset. The design philosophy follows the Balinese concept of <em>Tri Hita Karana</em> — harmony between people, nature, and the divine — creating spaces that feel simultaneously modern and deeply rooted in place.</p>
+          <p>Wake to the sound of gamelan at our open-air breakfast pavilion. Unwind at our spa with traditional Balinese healing rituals. Watch the sun dip below the horizon from our rooftop bar. Every moment at Monoloog Seminyak is designed to linger in memory long after you leave.</p>
+        </div>
+        <button class="show-more-btn">Show more ↓</button>
+      </div>
+
+      <!-- Amenities -->
+      <div class="detail-section" id="amenities">
+        <h2 class="detail-section__title">What this place offers</h2>
+        <div class="amenity-grid">
+          <div class="amenity-item"><span>🏊</span> Infinity Pool</div>
+          <div class="amenity-item"><span>🏖️</span> Beachfront Access</div>
+          <div class="amenity-item"><span>🧖</span> Spa & Wellness</div>
+          <div class="amenity-item"><span>🍳</span> Free Breakfast</div>
+          <div class="amenity-item"><span>🚗</span> Free Parking</div>
+          <div class="amenity-item"><span>📶</span> Free High-Speed WiFi</div>
+          <div class="amenity-item"><span>💪</span> Fitness Center</div>
+          <div class="amenity-item"><span>🛎️</span> 24h Concierge</div>
+          <div class="amenity-item"><span>✈️</span> Airport Shuttle</div>
+          <div class="amenity-item"><span>🍹</span> Rooftop Bar</div>
+          <div class="amenity-item"><span>🌿</span> Tropical Gardens</div>
+          <div class="amenity-item"><span>🧸</span> Kids Club</div>
+        </div>
+        <button class="show-more-btn" style="margin-top:var(--sp-4)">Show all 28 amenities ↓</button>
+      </div>
+
+      <!-- Rooms -->
+      <div class="detail-section" id="rooms">
+        <h2 class="detail-section__title">Available Rooms</h2>
+        <div class="rooms-grid">
+
+          <div class="room-card">
+            <div class="room-card__img-wrap">
+              <img class="room-card__img"
+                src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=480&h=270&fit=crop&q=80"
+                alt="Deluxe Room" loading="lazy">
+            </div>
+            <div class="room-card__body">
+              <p class="room-card__name">Deluxe Garden Room</p>
+              <div class="room-card__features">
+                <span class="room-feature">🛏️ King Bed</span>
+                <span class="room-feature">📐 38m²</span>
+                <span class="room-feature">👤 2 guests</span>
+                <span class="room-feature">🌿 Garden View</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-3)">
+                <span class="badge badge--orange">Free Cancellation</span>
+                <span class="badge badge--green">Breakfast Incl.</span>
+              </div>
+              <div class="room-card__footer">
+                <div>
+                  <p class="room-price">Rp 1,850,000 <span>/ night</span></p>
+                  <p style="font-size:0.75rem;color:var(--text-muted)">Incl. taxes & fees</p>
+                </div>
+                <a href="checkout.html" class="btn btn--orange btn--sm">Reserve</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="room-card">
+            <div class="room-card__img-wrap">
+              <img class="room-card__img"
+                src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=480&h=270&fit=crop&q=80"
+                alt="Ocean Suite" loading="lazy">
+            </div>
+            <div class="room-card__body">
+              <p class="room-card__name">Ocean View Suite</p>
+              <div class="room-card__features">
+                <span class="room-feature">🛏️ King Bed</span>
+                <span class="room-feature">📐 58m²</span>
+                <span class="room-feature">👤 2 guests</span>
+                <span class="room-feature">🌊 Ocean View</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-3)">
+                <span class="badge badge--orange">Free Cancellation</span>
+                <span class="badge badge--dark">Private Balcony</span>
+              </div>
+              <div class="room-card__footer">
+                <div>
+                  <p class="room-price">Rp 2,650,000 <span>/ night</span></p>
+                  <p style="font-size:0.75rem;color:var(--text-muted)">Incl. taxes & fees</p>
+                </div>
+                <a href="checkout.html" class="btn btn--orange btn--sm">Reserve</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="room-card">
+            <div class="room-card__img-wrap">
+              <img class="room-card__img"
+                src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=480&h=270&fit=crop&q=80"
+                alt="Pool Villa" loading="lazy">
+            </div>
+            <div class="room-card__body">
+              <p class="room-card__name">Private Pool Villa</p>
+              <div class="room-card__features">
+                <span class="room-feature">🛏️ King + Twin</span>
+                <span class="room-feature">📐 120m²</span>
+                <span class="room-feature">👤 4 guests</span>
+                <span class="room-feature">🏊 Private Pool</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-3)">
+                <span class="badge badge--red">Exclusive</span>
+                <span class="badge badge--green">Butler Service</span>
+              </div>
+              <div class="room-card__footer">
+                <div>
+                  <p class="room-price">Rp 5,800,000 <span>/ night</span></p>
+                  <p style="font-size:0.75rem;color:var(--text-muted)">Incl. taxes & fees</p>
+                </div>
+                <a href="checkout.html" class="btn btn--orange btn--sm">Reserve</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="room-card">
+            <div class="room-card__img-wrap">
+              <img class="room-card__img"
+                src="https://images.unsplash.com/photo-1455587734955-081b22074882?w=480&h=270&fit=crop&q=80"
+                alt="Family Room" loading="lazy">
+            </div>
+            <div class="room-card__body">
+              <p class="room-card__name">Family Terrace Room</p>
+              <div class="room-card__features">
+                <span class="room-feature">🛏️ 2 Queen Beds</span>
+                <span class="room-feature">📐 72m²</span>
+                <span class="room-feature">👤 4 guests</span>
+                <span class="room-feature">🌿 Terrace</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-3)">
+                <span class="badge badge--orange">Free Cancellation</span>
+                <span class="badge badge--green">Kids Welcome</span>
+              </div>
+              <div class="room-card__footer">
+                <div>
+                  <p class="room-price">Rp 3,200,000 <span>/ night</span></p>
+                  <p style="font-size:0.75rem;color:var(--text-muted)">Incl. taxes & fees</p>
+                </div>
+                <a href="checkout.html" class="btn btn--orange btn--sm">Reserve</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="detail-section" id="reviews">
+        <h2 class="detail-section__title">Guest Reviews</h2>
+        <div class="rating-summary">
+          <div class="rating-big">
+            <p class="rating-big__num">4.97</p>
+            <div class="stars" style="justify-content:center;margin:6px 0 4px">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <p class="rating-big__label">284 reviews</p>
+          </div>
+          <div class="rating-bars">
+            <div class="rating-bar-row"><span class="rating-bar-label">Cleanliness</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:99%"></div></div><span class="rating-bar-num">5.0</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">Location</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:96%"></div></div><span class="rating-bar-num">4.8</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">Service</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:99%"></div></div><span class="rating-bar-num">5.0</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">Value</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:92%"></div></div><span class="rating-bar-num">4.6</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">Amenities</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:96%"></div></div><span class="rating-bar-num">4.8</span></div>
+          </div>
+        </div>
+
+        <div class="reviews-grid">
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-avatar">S</div>
+              <div>
+                <p class="review-card__name">Siti Rahayu</p>
+                <p class="review-card__date">March 2026 · 3 nights</p>
+                <div class="stars" style="margin-top:4px"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              </div>
+            </div>
+            <p class="review-card__text">Absolutely breathtaking. The infinity pool overlooks the most perfect sunset I've ever witnessed. The staff remembered my name from day one and anticipated every need. Monoloog Seminyak has ruined all other hotels for me.</p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-avatar" style="background:var(--brand-orange)">A</div>
+              <div>
+                <p class="review-card__name">Ahmad Fauzi</p>
+                <p class="review-card__date">February 2026 · 5 nights</p>
+                <div class="stars" style="margin-top:4px"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              </div>
+            </div>
+            <p class="review-card__text">Honeymooned here and it was pure magic. The private pool villa is worth every rupiah. Breakfast on our terrace with rice field views, spa treatments that left us completely at peace — we've already booked our first anniversary.</p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-avatar" style="background:var(--brand-dark)">D</div>
+              <div>
+                <p class="review-card__name">Diana Putri</p>
+                <p class="review-card__date">January 2026 · 4 nights</p>
+                <div class="stars" style="margin-top:4px"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              </div>
+            </div>
+            <p class="review-card__text">I travel for work every month and Monoloog Seminyak is the first hotel that felt like home. The room was immaculate, the spa is world-class, and the concierge arranged a private cooking class I'll never forget. Truly exceptional.</p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-avatar" style="background:#007840">R</div>
+              <div>
+                <p class="review-card__name">Riko Santoso</p>
+                <p class="review-card__date">December 2025 · 7 nights</p>
+                <div class="stars" style="margin-top:4px"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+              </div>
+            </div>
+            <p class="review-card__text">Came for a family vacation with 2 kids. The kids club kept them entertained while my wife and I enjoyed the spa — absolute genius. The family terrace room was spacious and the nightly turndown with local flowers was a lovely touch.</p>
+          </div>
+        </div>
+        <button class="btn btn--outline" style="margin-top:var(--sp-5)">Show all 284 reviews</button>
+      </div>
+
+      <!-- Location -->
+      <div class="detail-section" id="location">
+        <h2 class="detail-section__title">Where you'll be</h2>
+        <div class="location-map">
+          <div style="width:100%;height:100%;background-image:linear-gradient(rgba(255,255,255,0.4) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.4) 1px,transparent 1px);background-size:48px 48px;position:relative;">
+            <div class="map-pin" style="top:50%;left:50%">
+              <div class="map-pin__bubble">Monoloog Bali Seminyak</div>
+              <div class="map-pin__bubble::after"></div>
+            </div>
+            <!-- Roads simulation -->
+            <div style="position:absolute;top:50%;left:0;right:0;height:2px;background:rgba(255,255,255,0.6)"></div>
+            <div style="position:absolute;top:0;bottom:0;left:40%;width:2px;background:rgba(255,255,255,0.6)"></div>
+          </div>
+        </div>
+        <p style="font-weight:700;margin-bottom:var(--sp-2)">Seminyak, Bali 80361</p>
+        <p class="hotel-desc" style="margin-bottom:var(--sp-3)">Located in the prestigious Laksmana street (Eat Street), the hotel is walking distance from Seminyak's finest restaurants, beach clubs, and boutiques. The beach is a 5-minute walk, and Ngurah Rai International Airport is just 25 minutes by car.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--sp-4)">
+          <div style="font-size:0.875rem;color:var(--text-secondary)">🏖️ Beach — 5 min walk</div>
+          <div style="font-size:0.875rem;color:var(--text-secondary)">✈️ Airport — 25 min drive</div>
+          <div style="font-size:0.875rem;color:var(--text-secondary)">🛍️ Shopping — 3 min walk</div>
+          <div style="font-size:0.875rem;color:var(--text-secondary)">🍽️ Restaurants — On-site</div>
+        </div>
+      </div>
+
+      <!-- Things to Know -->
+      <div class="detail-section" id="policies">
+        <h2 class="detail-section__title">Things to know</h2>
+        <div class="things-grid">
+          <div>
+            <p class="things-col__title">Hotel Rules</p>
+            <div class="things-list">
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Check-in after 2:00 PM</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Check-out before 12:00 PM</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Maximum 4 guests per room</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>No smoking in rooms</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Pets allowed (on request)</div>
+            </div>
+          </div>
+          <div>
+            <p class="things-col__title">Health & Safety</p>
+            <div class="things-list">
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Enhanced cleaning protocol</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Contactless check-in available</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Hand sanitiser stations</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Social distancing measures</div>
+            </div>
+          </div>
+          <div>
+            <p class="things-col__title">Cancellation Policy</p>
+            <div class="things-list">
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Free cancellation before Apr 11</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>After Apr 11: 1 night charged</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Non-refundable rates save 20%</div>
+              <div class="things-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Modify dates free of charge</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /left column -->
+
+    <!-- RIGHT: Booking Panel -->
+    <aside>
+      <div class="booking-panel">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:var(--sp-2)">
+          <p class="booking-panel__price">Rp 1,850,000 <span>/ night</span></p>
+          <span class="badge badge--orange">Save 20%</span>
+        </div>
+
+        <div class="booking-panel__rating">
+          <svg viewBox="0 0 24 24" fill="var(--brand-orange)" style="width:14px;height:14px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <strong style="font-size:0.9375rem">4.97</strong>
+          <span style="font-size:0.875rem;color:var(--text-secondary)">· 284 reviews</span>
+        </div>
+
+        <!-- Date + Guest inputs -->
+        <div class="booking-inputs">
+          <div class="booking-inputs__row">
+            <div class="booking-input-cell">
+              <p class="booking-input-cell__label">Check in</p>
+              <p class="booking-input-cell__val">Apr 12, 2026</p>
+            </div>
+            <div class="booking-input-cell">
+              <p class="booking-input-cell__label">Check out</p>
+              <p class="booking-input-cell__val">Apr 18, 2026</p>
+            </div>
+          </div>
+          <div class="booking-inputs__row">
+            <div class="booking-input-cell booking-input-cell--full">
+              <p class="booking-input-cell__label">Guests</p>
+              <p class="booking-input-cell__val">2 adults · 0 children</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guest stepper popup hint -->
+        <div style="background:var(--bg-surface);border-radius:var(--r-badge);padding:var(--sp-3) var(--sp-4);margin-bottom:var(--sp-4)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--sp-3)">
+            <div><p style="font-weight:700;font-size:0.9375rem">Adults</p><p style="font-size:0.8125rem;color:var(--text-secondary)">Age 13+</p></div>
+            <div class="stepper" data-min="1" data-max="8">
+              <button class="stepper__btn" data-dir="minus">−</button>
+              <span class="stepper__val">2</span>
+              <button class="stepper__btn" data-dir="plus">+</button>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><p style="font-weight:700;font-size:0.9375rem">Children</p><p style="font-size:0.8125rem;color:var(--text-secondary)">Ages 2–12</p></div>
+            <div class="stepper" data-min="0" data-max="6">
+              <button class="stepper__btn" data-dir="minus" disabled>−</button>
+              <span class="stepper__val">0</span>
+              <button class="stepper__btn" data-dir="plus">+</button>
+            </div>
+          </div>
+        </div>
+
+        <a href="checkout.html" class="btn btn--orange btn--full btn--lg" style="margin-bottom:var(--sp-3);border-radius:var(--r-sm)">
+          Reserve Now
+        </a>
+
+        <p style="text-align:center;font-size:0.8125rem;color:var(--text-secondary);margin-bottom:var(--sp-4)">
+          You won't be charged yet
+        </p>
+
+        <!-- Price Breakdown -->
+        <div>
+          <div class="price-row">
+            <span>Rp 1,850,000 × 6 nights</span>
+            <span>Rp 11,100,000</span>
+          </div>
+          <div class="price-row">
+            <span>Cleaning fee</span>
+            <span>Rp 250,000</span>
+          </div>
+          <div class="price-row">
+            <span>Service fee</span>
+            <span>Rp 555,000</span>
+          </div>
+          <div class="price-row">
+            <span style="color:var(--brand-red);font-weight:600">Discount (MONO20)</span>
+            <span style="color:var(--brand-red)">− Rp 1,110,000</span>
+          </div>
+          <div class="price-row price-row--total">
+            <span>Total (incl. taxes)</span>
+            <strong>Rp 10,795,000</strong>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p style="text-align:center;font-size:0.8125rem;color:var(--text-secondary)">
+          🔒 Secure payment · Free cancellation until Apr 11
+        </p>
+      </div>
+    </aside>
+
+  </div><!-- /detail-layout -->
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand__logo">
+          <div class="footer-brand__mark">M</div>
+          <span class="footer-brand__name">Monoloog</span>
+        </div>
+        <p class="footer-brand__tagline">Premium hotel experiences across Indonesia's most iconic destinations.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social">📸</a>
+          <a href="#" class="footer-social">📘</a>
+          <a href="#" class="footer-social">🎵</a>
+          <a href="#" class="footer-social">💬</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col__title">Destinations</p>
+        <div class="footer-col__links">
+          <a href="search.html?dest=bali" class="footer-col__link">Bali</a>
+          <a href="search.html?dest=jakarta" class="footer-col__link">Jakarta</a>
+          <a href="search.html?dest=yogyakarta" class="footer-col__link">Yogyakarta</a>
+          <a href="search.html?dest=lombok" class="footer-col__link">Lombok</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col__title">Support</p>
+        <div class="footer-col__links">
+          <a href="#" class="footer-col__link">Help Center</a>
+          <a href="#" class="footer-col__link">Contact Us</a>
+          <a href="#" class="footer-col__link">Cancellation Policy</a>
+          <a href="#" class="footer-col__link">WhatsApp Support</a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-col__title">Company</p>
+        <div class="footer-col__links">
+          <a href="#" class="footer-col__link">About Monoloog</a>
+          <a href="#" class="footer-col__link">Careers</a>
+          <a href="#" class="footer-col__link">List Your Hotel</a>
+          <a href="#" class="footer-col__link">Press</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-bottom__copy">© 2026 Monoloog Hotels Indonesia. All rights reserved.</p>
+      <div class="footer-bottom__links">
+        <a href="#" class="footer-bottom__link">Privacy Policy</a>
+        <a href="#" class="footer-bottom__link">Terms</a>
+        <a href="#" class="footer-bottom__link">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  // Smooth scroll for detail nav
+  document.querySelectorAll('.detail-nav__link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        const offset = 80 + 57 + 16;
+        window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+      }
+      document.querySelectorAll('.detail-nav__link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  // Update active nav on scroll
+  const sections = ['overview','amenities','rooms','reviews','location','policies'];
+  window.addEventListener('scroll', () => {
+    const offset = 80 + 57 + 80;
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.offsetTop - offset <= window.scrollY) {
+        document.querySelectorAll('.detail-nav__link').forEach(l => l.classList.remove('active'));
+        document.querySelector(`.detail-nav__link[href="#${id}"]`)?.classList.add('active');
+      }
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>

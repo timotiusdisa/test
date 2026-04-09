@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Booking — Monoloog Hotels</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { background: var(--bg-surface); }
+
+    /* ── Checkout Header ─── */
+    .checkout-header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0 var(--sp-6);
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-nav);
+    }
+    .checkout-header__back {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-nav);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: var(--r-sm);
+      transition: background var(--transition);
+    }
+    .checkout-header__back:hover { background: var(--bg-surface); }
+    .checkout-header__back svg { width: 18px; height: 18px; }
+    .checkout-header__secure {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-family: var(--font-nav);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+    .checkout-header__secure svg { width: 16px; height: 16px; color: var(--brand-orange); }
+
+    /* ── Checkout Layout ─── */
+    .checkout-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: var(--sp-7) var(--sp-5);
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: var(--sp-8);
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .checkout-wrap { grid-template-columns: 1fr; }
+      .booking-summary-panel { order: -1; }
+    }
+    @media (max-width: 640px) { .checkout-wrap { padding: var(--sp-4); gap: var(--sp-5); } }
+
+    /* ── Steps Progress ─── */
+    .steps-bar {
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-card);
+      padding: var(--sp-4) var(--sp-5);
+      margin-bottom: var(--sp-5);
+      display: flex;
+      align-items: center;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      flex: 1;
+    }
+    .step-item__num {
+      width: 30px; height: 30px;
+      border-radius: var(--r-circle);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: all var(--transition);
+    }
+    .step-item--pending .step-item__num { background: var(--bg-surface); border: 2px solid var(--border); color: var(--text-muted); }
+    .step-item--active  .step-item__num { background: var(--brand-red); color: white; border: 2px solid var(--brand-red); }
+    .step-item--done    .step-item__num { background: var(--brand-dark); color: white; border: 2px solid var(--brand-dark); }
+    .step-item__label {
+      font-family: var(--font-nav);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .step-item--pending .step-item__label { color: var(--text-muted); }
+    .step-item--active  .step-item__label { color: var(--text-primary); }
+    .step-item--done    .step-item__label { color: var(--text-secondary); }
+    .step-connector {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      margin: 0 var(--sp-2);
+      border-radius: 1px;
+      transition: background var(--transition);
+    }
+    .step-connector--done { background: var(--brand-dark); }
+
+    /* ── Form Panels ─── */
+    .form-panel {
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      margin-bottom: var(--sp-4);
+    }
+    .form-panel__header {
+      padding: var(--sp-5) var(--sp-5) var(--sp-4);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+    }
+    .form-panel__num {
+      width: 32px; height: 32px;
+      border-radius: var(--r-circle);
+      background: var(--brand-red);
+      color: white;
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .form-panel__title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+    .form-panel__body { padding: var(--sp-5); }
+
+    /* Form Grid */
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--sp-4); }
+    @media (max-width: 640px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
+
+    /* ── Payment Methods ─── */
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-5);
+    }
+    @media (max-width: 640px) { .payment-methods { grid-template-columns: 1fr; } }
+
+    .pay-method {
+      border: 2px solid var(--border);
+      border-radius: var(--r-badge);
+      padding: var(--sp-4);
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      position: relative;
+    }
+    .pay-method:hover { border-color: var(--brand-red); }
+    .pay-method.active { border-color: var(--brand-red); background: rgba(212,4,36,0.03); }
+    .pay-method.active::after {
+      content: '✓';
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--brand-red);
+    }
+    .pay-method__icon { font-size: 1.5rem; flex-shrink: 0; }
+    .pay-method__name {
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .pay-method__sub { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Card input with icon */
+    .card-input-wrap { position: relative; }
+    .card-input-wrap .form-input { padding-right: 80px; }
+    .card-brands {
+      position: absolute;
+      right: var(--sp-3);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .card-brand {
+      width: 32px; height: 20px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .card-brand--visa { background: #1a1f71; color: white; }
+    .card-brand--mc   { background: #eb001b; color: white; }
+    .card-brand--bca  { background: #005baa; color: white; }
+
+    /* ── Booking Summary Panel ─── */
+    .booking-summary-panel { position: sticky; top: calc(72px + var(--sp-4)); }
+
+    .summary-card {
+      background: white;
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .summary-hotel-img {
+      width: 100%; aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+    .summary-body { padding: var(--sp-5); }
+    .summary-hotel-name {
+      font-family: var(--font-heading);
+      font-size: 1.125rem;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .summary-hotel-loc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--sp-4);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .summary-rating {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-4);
+      padding-bottom: var(--sp-4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Booking detail rows */
+    .booking-detail-row {
+      display: flex;
+      gap: var(--sp-4);
+      padding: var(--sp-3) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .booking-detail-row:last-of-type { border-bottom: none; }
+    .booking-detail-row__label {
+      font-family: var(--font-nav);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+    .booking-detail-row__val {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .booking-detail-row__sub {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Price summary */
+    .price-summary { padding: var(--sp-4); background: var(--bg-surface); border-radius: var(--r-badge); margin-top: var(--sp-4); }
+
+    /* Trust badges */
+    .trust-badges {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      padding: var(--sp-4);
+      border-top: 1px solid var(--border);
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-3);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+    }
+    .trust-badge__icon {
+      width: 32px; height: 32px;
+      border-radius: var(--r-badge);
+      background: rgba(212,4,36,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .trust-badge strong { color: var(--text-primary); font-weight: 700; display: block; font-size: 0.875rem; }
+
+    /* ── Special requests ─── */
+    .requests-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-4);
+    }
+    @media (max-width: 640px) { .requests-grid { grid-template-columns: 1fr; } }
+
+    .request-chip {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-badge);
+      cursor: pointer;
+      transition: all var(--transition);
+      background: white;
+    }
+    .request-chip:hover { border-color: var(--brand-red); }
+    .request-chip.selected { border-color: var(--brand-red); background: rgba(212,4,36,0.04); }
+    .request-chip input[type="checkbox"] { accent-color: var(--brand-red); flex-shrink: 0; }
+    .request-chip__text {
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      flex: 1;
+    }
+    .request-chip__icon { font-size: 1.125rem; flex-shrink: 0; }
+
+    /* ── Confirmation state ─── */
+    .confirm-banner {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, #1a0a2e 100%);
+      border-radius: var(--r-card);
+      padding: var(--sp-7) var(--sp-6);
+      text-align: center;
+      display: none;
+    }
+    .confirm-banner.show { display: block; }
+    .confirm-icon { font-size: 3.5rem; margin-bottom: var(--sp-4); }
+    .confirm-title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      color: white;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--sp-3);
+    }
+    .confirm-sub { font-size: 1rem; color: rgba(255,255,255,0.7); font-weight: 300; margin-bottom: var(--sp-5); }
+    .confirm-ref {
+      background: rgba(255,255,255,0.1);
+      border-radius: var(--r-sm);
+      padding: var(--sp-3) var(--sp-4);
+      display: inline-block;
+      font-family: var(--font-nav);
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--brand-orange);
+      margin-bottom: var(--sp-5);
+    }
+
+    /* ── Promo code ─── */
+    .promo-row {
+      display: flex;
+      gap: var(--sp-2);
+    }
+    .promo-row .form-input { border-radius: var(--r-badge) 0 0 var(--r-badge); }
+    .promo-row .btn { border-radius: 0 var(--r-badge) var(--r-badge) 0; flex-shrink: 0; }
+
+    /* ── Security notice ─── */
+    .security-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      background: rgba(0,120,64,0.06);
+      border: 1px solid rgba(0,120,64,0.2);
+      border-radius: var(--r-badge);
+      padding: var(--sp-4);
+      margin-top: var(--sp-4);
+    }
+    .security-notice svg { width: 18px; height: 18px; color: #007840; flex-shrink: 0; margin-top: 1px; }
+    .security-notice p { font-size: 0.8125rem; color: var(--text-secondary); font-weight: 300; line-height: 1.5; }
+    .security-notice strong { color: var(--text-primary); }
+
+    /* ── Final CTA bar (mobile) ─── */
+    .checkout-cta-bar {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: var(--sp-4) var(--sp-5);
+      z-index: 80;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+      gap: var(--sp-4);
+      align-items: center;
+      justify-content: space-between;
+    }
+    @media (max-width: 640px) { .checkout-cta-bar { display: flex; } body { padding-bottom: 80px; } }
+    .checkout-cta-bar__price { font-family: var(--font-heading); font-size: 1.25rem; color: var(--text-primary); }
+    .checkout-cta-bar__sub { font-size: 0.75rem; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+
+<!-- ── Checkout Header ────────────────────────────────────────── -->
+<header class="checkout-header">
+  <a href="hotel-detail.html" class="checkout-header__back">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to hotel
+  </a>
+
+  <a href="index.html" class="logo">
+    <div class="logo__mark">M</div>
+    <span class="logo__text">Monoloog</span>
+  </a>
+
+  <div class="checkout-header__secure">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Secure Checkout
+  </div>
+</header>
+
+<!-- ── Main ──────────────────────────────────────────────────── -->
+<main>
+  <div class="checkout-wrap">
+
+    <!-- LEFT: Form -->
+    <div>
+      <!-- Steps Bar -->
+      <div class="steps-bar">
+        <div class="step-item step-item--done" data-step-num="1">
+          <div class="step-item__num">✓</div>
+          <span class="step-item__label">Details</span>
+        </div>
+        <div class="step-connector step-connector--done"></div>
+        <div class="step-item step-item--active" data-step-num="2">
+          <div class="step-item__num">2</div>
+          <span class="step-item__label">Payment</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item step-item--pending" data-step-num="3">
+          <div class="step-item__num">3</div>
+          <span class="step-item__label">Confirm</span>
+        </div>
+      </div>
+
+      <!-- STEP 1: Guest Details (pre-filled / done) -->
+      <div class="form-panel" id="step-panel-1">
+        <div class="form-panel__header" style="background:var(--bg-surface)">
+          <div class="form-panel__num" style="background:var(--brand-dark)">✓</div>
+          <div>
+            <p class="form-panel__title" style="font-size:1rem">Your Details</p>
+            <p style="font-size:0.8125rem;color:var(--text-secondary);margin-top:2px">Ahmad Fauzi · ahmad.fauzi@email.com · +62 812 3456 7890</p>
+          </div>
+          <button class="btn btn--ghost btn--sm" style="margin-left:auto;text-decoration:underline" onclick="document.getElementById('guest-edit').classList.toggle('hidden')">Edit</button>
+        </div>
+        <div class="form-panel__body hidden" id="guest-edit">
+          <div class="form-grid-2" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input class="form-input" type="text" value="Ahmad" placeholder="First name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input class="form-input" type="text" value="Fauzi" placeholder="Last name">
+            </div>
+          </div>
+          <div class="form-grid-2" style="margin-bottom:var(--sp-4)">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input class="form-input" type="email" value="ahmad.fauzi@email.com" placeholder="Email">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input class="form-input" type="tel" value="+62 812 3456 7890" placeholder="+62...">
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:var(--sp-4)">
+            <label class="form-label">Country / Region</label>
+            <select class="form-input form-select">
+              <option selected>Indonesia</option>
+              <option>Singapore</option>
+              <option>Malaysia</option>
+              <option>Australia</option>
+              <option>United States</option>
+            </select>
+          </div>
+          <button class="btn btn--dark btn--sm">Save Details</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Payment -->
+      <div class="form-panel" id="step-panel-2">
+        <div class="form-panel__header">
+          <div class="form-panel__num">2</div>
+          <p class="form-panel__title">Payment Method</p>
+        </div>
+        <div class="form-panel__body">
+
+          <!-- Payment Method Selector -->
+          <p class="form-label" style="margin-bottom:var(--sp-3)">Choose payment method</p>
+          <div class="payment-methods">
+            <div class="pay-method active" data-method="card">
+              <div class="pay-method__icon">💳</div>
+              <div>
+                <p class="pay-method__name">Credit / Debit</p>
+                <p class="pay-method__sub">Visa, MC, BCA</p>
+              </div>
+            </div>
+            <div class="pay-method" data-method="transfer">
+              <div class="pay-method__icon">🏦</div>
+              <div>
+                <p class="pay-method__name">Bank Transfer</p>
+                <p class="pay-method__sub">BCA, Mandiri, BNI</p>
+              </div>
+            </div>
+            <div class="pay-method" data-method="ewallet">
+              <div class="pay-method__icon">📱</div>
+              <div>
+                <p class="pay-method__name">E-Wallet</p>
+                <p class="pay-method__sub">GoPay, OVO, DANA</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credit Card Form -->
+          <div id="card-form">
+            <div class="form-group" style="margin-bottom:var(--sp-4)">
+              <label class="form-label">Cardholder Name</label>
+              <input class="form-input" type="text" placeholder="Name as on card">
+            </div>
+
+            <div class="form-group" style="margin-bottom:var(--sp-4)">
+              <label class="form-label">Card Number</label>
+              <div class="card-input-wrap">
+                <input class="form-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" id="card-number">
+                <div class="card-brands">
+                  <div class="card-brand card-brand--visa">VISA</div>
+                  <div class="card-brand card-brand--mc">MC</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-grid-3" style="margin-bottom:var(--sp-4)">
+              <div class="form-group" style="grid-column: span 2">
+                <label class="form-label">Expiry Date</label>
+                <input class="form-input" type="text" placeholder="MM / YY" maxlength="7">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVV</label>
+                <input class="form-input" type="text" placeholder="•••" maxlength="4">
+              </div>
+            </div>
+
+            <label class="check-item" style="margin-bottom:var(--sp-4)">
+              <input type="checkbox" checked style="accent-color:var(--brand-red)">
+              <span style="font-size:0.875rem;color:var(--text-secondary)">Save this card for future bookings</span>
+            </label>
+          </div>
+
+          <!-- Bank Transfer (hidden) -->
+          <div id="transfer-form" style="display:none">
+            <div style="background:var(--bg-surface);border-radius:var(--r-badge);padding:var(--sp-4);margin-bottom:var(--sp-4)">
+              <p class="form-label" style="margin-bottom:var(--sp-3)">Select Your Bank</p>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3)">
+                <div class="pay-method" style="flex-direction:column;text-align:center;gap:var(--sp-1)">
+                  <div class="pay-method__icon">🏦</div>
+                  <p class="pay-method__name" style="font-size:0.8125rem">BCA</p>
+                </div>
+                <div class="pay-method active" style="flex-direction:column;text-align:center;gap:var(--sp-1)">
+                  <div class="pay-method__icon">🏦</div>
+                  <p class="pay-method__name" style="font-size:0.8125rem">Mandiri</p>
+                </div>
+                <div class="pay-method" style="flex-direction:column;text-align:center;gap:var(--sp-1)">
+                  <div class="pay-method__icon">🏦</div>
+                  <p class="pay-method__name" style="font-size:0.8125rem">BNI</p>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:0.875rem;color:var(--text-secondary);font-weight:300;line-height:1.6">
+              After clicking "Complete Booking", you will receive the bank account details via email and SMS. Payment must be completed within <strong style="color:var(--text-primary)">3 hours</strong> to secure your reservation.
+            </p>
+          </div>
+
+          <!-- E-Wallet (hidden) -->
+          <div id="ewallet-form" style="display:none">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3);margin-bottom:var(--sp-4)">
+              <div class="pay-method active" style="flex-direction:column;text-align:center;gap:var(--sp-1)">
+                <div class="pay-method__icon">💚</div>
+                <p class="pay-method__name" style="font-size:0.8125rem">GoPay</p>
+              </div>
+              <div class="pay-method" style="flex-direction:column;text-align:center;gap:var(--sp-1)">
+                <div class="pay-method__icon">💜</div>
+                <p class="pay-method__name" style="font-size:0.8125rem">OVO</p>
+              </div>
+              <div class="pay-method" style="flex-direction:column;text-align:center;gap:var(--sp-1)">
+                <div class="pay-method__icon">💙</div>
+                <p class="pay-method__name" style="font-size:0.8125rem">DANA</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Registered Phone Number</label>
+              <input class="form-input" type="tel" placeholder="+62 8xx xxxx xxxx">
+            </div>
+          </div>
+
+          <!-- Promo Code -->
+          <div class="divider"></div>
+          <p class="form-label" style="margin-bottom:var(--sp-3)">Promo Code</p>
+          <div class="promo-row" style="margin-bottom:var(--sp-4)">
+            <input class="form-input" type="text" placeholder="Enter code (e.g. MONO20)" value="MONO20">
+            <button class="btn btn--dark">Apply</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4);background:rgba(0,120,64,0.07);border-radius:var(--r-badge)">
+            <span style="font-size:1.125rem">✅</span>
+            <div>
+              <p style="font-weight:700;font-size:0.875rem;color:#007840">MONO20 applied</p>
+              <p style="font-size:0.8125rem;color:var(--text-secondary)">You save Rp 1,110,000</p>
+            </div>
+          </div>
+
+          <div class="security-notice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <p><strong>Your payment is protected.</strong> All transactions are encrypted with 256-bit SSL. Monoloog Hotels never stores your full card details.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Special Requests -->
+      <div class="form-panel">
+        <div class="form-panel__header">
+          <div class="form-panel__num" style="background:var(--brand-dark)">3</div>
+          <p class="form-panel__title">Special Requests</p>
+          <span class="badge badge--green" style="margin-left:auto">Optional</span>
+        </div>
+        <div class="form-panel__body">
+          <p style="font-size:0.9375rem;color:var(--text-secondary);margin-bottom:var(--sp-4);font-weight:300;line-height:1.6">
+            Let us know your preferences. We'll do our best to accommodate — requests are not guaranteed but we always try.
+          </p>
+          <div class="requests-grid">
+            <label class="request-chip">
+              <input type="checkbox"> <span class="request-chip__icon">🌙</span>
+              <span class="request-chip__text">Late check-out (2 PM)</span>
+            </label>
+            <label class="request-chip selected">
+              <input type="checkbox" checked> <span class="request-chip__icon">🛏️</span>
+              <span class="request-chip__text">High floor room</span>
+            </label>
+            <label class="request-chip">
+              <input type="checkbox"> <span class="request-chip__icon">🌊</span>
+              <span class="request-chip__text">Ocean / pool view</span>
+            </label>
+            <label class="request-chip selected">
+              <input type="checkbox" checked> <span class="request-chip__icon">🥂</span>
+              <span class="request-chip__text">Anniversary setup</span>
+            </label>
+            <label class="request-chip">
+              <input type="checkbox"> <span class="request-chip__icon">🚗</span>
+              <span class="request-chip__text">Airport pickup</span>
+            </label>
+            <label class="request-chip">
+              <input type="checkbox"> <span class="request-chip__icon">🍼</span>
+              <span class="request-chip__text">Baby cot needed</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Additional Notes</label>
+            <textarea class="form-input" rows="3" placeholder="Anything else we should know? Allergies, accessibility needs, surprises for a loved one…" style="resize:vertical">Anniversary honeymoon — would love a romantic setup if possible 🌹</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terms & Submit -->
+      <div class="form-panel">
+        <div class="form-panel__body">
+          <label class="check-item" style="margin-bottom:var(--sp-3);align-items:flex-start;gap:var(--sp-3)">
+            <input type="checkbox" checked style="accent-color:var(--brand-red);margin-top:2px;flex-shrink:0">
+            <span style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6">
+              I agree to the <a href="#" style="color:var(--brand-red);text-decoration:underline">Terms & Conditions</a>, <a href="#" style="color:var(--brand-red);text-decoration:underline">Privacy Policy</a>, and <a href="#" style="color:var(--brand-red);text-decoration:underline">Cancellation Policy</a> of Monoloog Hotels.
+            </span>
+          </label>
+          <label class="check-item" style="margin-bottom:var(--sp-5)">
+            <input type="checkbox" checked style="accent-color:var(--brand-red)">
+            <span style="font-size:0.875rem;color:var(--text-secondary)">Send me exclusive deals and offers via email</span>
+          </label>
+
+          <!-- Submit Button -->
+          <button class="btn btn--orange btn--full btn--lg" id="confirm-btn" style="font-size:1.0625rem;letter-spacing:0.03em;padding:16px 24px">
+            🔒 Complete Booking — Rp 10,795,000
+          </button>
+          <p style="text-align:center;font-size:0.8125rem;color:var(--text-secondary);margin-top:var(--sp-3)">
+            By completing this booking you agree to the above terms. You won't be charged until we confirm availability.
+          </p>
+        </div>
+      </div>
+
+      <!-- Confirmation Banner (shown after submit) -->
+      <div class="confirm-banner" id="confirm-banner">
+        <div class="confirm-icon">🎉</div>
+        <h2 class="confirm-title">Booking Confirmed!</h2>
+        <p class="confirm-sub">
+          Your stay at <strong style="color:white">Monoloog Bali Seminyak</strong> is confirmed.<br>
+          A confirmation has been sent to <strong style="color:white">ahmad.fauzi@email.com</strong>
+        </p>
+        <div class="confirm-ref">Booking Ref: MNL-2026-04-18742</div>
+        <div style="display:flex;gap:var(--sp-3);justify-content:center;flex-wrap:wrap">
+          <a href="index.html" class="btn btn--orange btn--lg">Browse More Hotels</a>
+          <a href="#" class="btn" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3)">Download Receipt</a>
+        </div>
+      </div>
+
+    </div><!-- /LEFT -->
+
+    <!-- RIGHT: Booking Summary -->
+    <aside class="booking-summary-panel">
+      <div class="summary-card">
+        <!-- Hotel Image -->
+        <img class="summary-hotel-img"
+          src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&h=450&fit=crop&q=80"
+          alt="Monoloog Bali Seminyak">
+
+        <div class="summary-body">
+          <!-- Hotel info -->
+          <div class="stars" style="margin-bottom:var(--sp-2)">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <h3 class="summary-hotel-name">Monoloog Bali Seminyak</h3>
+          <p class="summary-hotel-loc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Seminyak, Bali, Indonesia
+          </p>
+          <div class="summary-rating">
+            <div class="rating-score">4.97</div>
+            <span style="font-size:0.875rem;color:var(--text-secondary)">Exceptional · 284 reviews</span>
+          </div>
+
+          <!-- Booking details -->
+          <div>
+            <div class="booking-detail-row">
+              <span class="booking-detail-row__label">Room</span>
+              <div>
+                <p class="booking-detail-row__val">Deluxe Garden Room</p>
+                <p class="booking-detail-row__sub">King Bed · 38m² · 2 guests</p>
+              </div>
+            </div>
+            <div class="booking-detail-row">
+              <span class="booking-detail-row__label">Check-in</span>
+              <div>
+                <p class="booking-detail-row__val">Saturday, Apr 12, 2026</p>
+                <p class="booking-detail-row__sub">From 2:00 PM</p>
+              </div>
+            </div>
+            <div class="booking-detail-row">
+              <span class="booking-detail-row__label">Check-out</span>
+              <div>
+                <p class="booking-detail-row__val">Friday, Apr 18, 2026</p>
+                <p class="booking-detail-row__sub">By 12:00 PM</p>
+              </div>
+            </div>
+            <div class="booking-detail-row">
+              <span class="booking-detail-row__label">Duration</span>
+              <p class="booking-detail-row__val">6 nights</p>
+            </div>
+            <div class="booking-detail-row">
+              <span class="booking-detail-row__label">Guests</span>
+              <p class="booking-detail-row__val">2 Adults</p>
+            </div>
+          </div>
+
+          <!-- Price breakdown -->
+          <div class="price-summary">
+            <p class="form-label" style="margin-bottom:var(--sp-3)">Price Summary</p>
+            <div class="price-row">
+              <span>Rp 1,850,000 × 6 nights</span>
+              <span>Rp 11,100,000</span>
+            </div>
+            <div class="price-row">
+              <span>Cleaning fee</span>
+              <span>Rp 250,000</span>
+            </div>
+            <div class="price-row">
+              <span>Service fee</span>
+              <span>Rp 555,000</span>
+            </div>
+            <div class="price-row">
+              <span style="color:var(--brand-red);font-weight:600">Discount (MONO20)</span>
+              <span style="color:var(--brand-red)">− Rp 1,110,000</span>
+            </div>
+            <div class="divider" style="margin:var(--sp-2) 0"></div>
+            <div class="price-row price-row--total">
+              <span>Total (incl. taxes)</span>
+              <strong style="font-size:1.125rem;color:var(--brand-red)">Rp 10,795,000</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <div class="trust-badge__icon">✅</div>
+            <div>
+              <strong>Free Cancellation</strong>
+              Until Apr 11, 2026 — full refund guaranteed
+            </div>
+          </div>
+          <div class="trust-badge">
+            <div class="trust-badge__icon">🔒</div>
+            <div>
+              <strong>Secure Payment</strong>
+              256-bit SSL encryption on all transactions
+            </div>
+          </div>
+          <div class="trust-badge">
+            <div class="trust-badge__icon">💬</div>
+            <div>
+              <strong>24/7 Support</strong>
+              WhatsApp & live chat always available
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Need help box -->
+      <div style="background:white;border-radius:var(--r-card);box-shadow:var(--shadow-card);padding:var(--sp-4);margin-top:var(--sp-4);display:flex;align-items:center;gap:var(--sp-3)">
+        <div style="width:40px;height:40px;background:rgba(239,109,0,0.1);border-radius:var(--r-circle);display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0">💬</div>
+        <div style="flex:1">
+          <p style="font-weight:700;font-size:0.875rem;color:var(--text-primary);margin-bottom:2px">Need help with your booking?</p>
+          <p style="font-size:0.8125rem;color:var(--text-secondary);font-weight:300">Chat with us on WhatsApp</p>
+        </div>
+        <a href="#" class="btn btn--orange btn--sm">Chat Now</a>
+      </div>
+    </aside>
+
+  </div><!-- /checkout-wrap -->
+</main>
+
+<!-- Mobile CTA Bar -->
+<div class="checkout-cta-bar">
+  <div>
+    <p class="checkout-cta-bar__price">Rp 10,795,000</p>
+    <p class="checkout-cta-bar__sub">Total · 6 nights incl. taxes</p>
+  </div>
+  <button class="btn btn--orange" id="mobile-confirm-btn">Complete Booking</button>
+</div>
+
+<script src="script.js"></script>
+<script>
+  // Payment method switching
+  document.querySelectorAll('.pay-method[data-method]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.pay-method[data-method]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const method = btn.dataset.method;
+      document.getElementById('card-form').style.display     = method === 'card'     ? '' : 'none';
+      document.getElementById('transfer-form').style.display = method === 'transfer' ? '' : 'none';
+      document.getElementById('ewallet-form').style.display  = method === 'ewallet'  ? '' : 'none';
+    });
+  });
+
+  // Request chips toggle
+  document.querySelectorAll('.request-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  // Card number formatting
+  const cardInput = document.getElementById('card-number');
+  cardInput?.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 16);
+    e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
+  });
+
+  // Confirm booking
+  function handleConfirm(e) {
+    e?.preventDefault();
+    const btn = document.getElementById('confirm-btn');
+    const banner = document.getElementById('confirm-banner');
+
+    // Animate button
+    btn.textContent = 'Processing…';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    setTimeout(() => {
+      // Hide all form panels
+      document.querySelectorAll('.form-panel').forEach(p => {
+        p.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        p.style.opacity = '0';
+        p.style.transform = 'translateY(-8px)';
+        setTimeout(() => p.style.display = 'none', 300);
+      });
+      document.querySelector('.steps-bar').style.display = 'none';
+
+      // Show confirmation
+      setTimeout(() => {
+        banner.classList.add('show');
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 400);
+    }, 2000);
+  }
+
+  document.getElementById('confirm-btn')?.addEventListener('click', handleConfirm);
+  document.getElementById('mobile-confirm-btn')?.addEventListener('click', handleConfirm);
+
+  // Guest edit toggle
+  document.querySelector('[onclick*="guest-edit"]')?.addEventListener('click', function() {
+    const el = document.getElementById('guest-edit');
+    el.classList.toggle('hidden');
+  });
+</script>
+
+<style>
+  .hidden { display: none !important; }
+</style>
+</body>
+</html>
